@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Colour your calm | Thrive! by Medihelp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- OPTIONAL engagement tracking (needs your privacy/IT approval first):
+     1. Create a free site at goatcounter.com (cookie-free, POPIA-friendlier than most tools).
+     2. Replace CODE below and remove the comment markers.
+<script data-goatcounter="https://CODE.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+-->
+<style>
+:root{--green:#87c300;--navy:#17469e;--deep:#1b4d2e;--mint:#eef6e2}
+*{box-sizing:border-box}
+body{margin:0;font-family:Barlow,Arial,sans-serif;color:#222;background:#fff;line-height:1.45}
+header{padding:14px 18px;border-bottom:4px solid var(--green);display:flex;justify-content:space-between;align-items:center;font-weight:700;color:var(--navy)}
+header span{font-weight:400;font-size:14px;color:#555}
+main{max-width:560px;margin:0 auto;padding:18px}
+h1{font-size:32px;margin:6px 0;color:var(--deep)}
+h1 em{font-style:normal;color:var(--green)}
+p{margin:6px 0 12px}
+#scene{width:100%;height:auto;display:block;border-radius:14px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.r{cursor:pointer;outline:none}
+.r>:not(text){fill:#f6f9f0;stroke:#8fa56d;stroke-width:1.2;transition:fill .3s}
+.r:focus-visible>:not(text){stroke:var(--navy);stroke-width:3}
+.r.done>:not(text){stroke:#fff;stroke-width:1}
+.num{font:700 14px Barlow,Arial,sans-serif;fill:var(--deep);text-anchor:middle;paint-order:stroke;stroke:#fff;stroke-width:3px;pointer-events:none}
+.r.done .num{display:none}
+.r.hint>:not(text){animation:pulse .6s 3}
+@keyframes pulse{50%{fill:#fff3a8}}
+.bar{height:10px;background:var(--mint);border-radius:6px;margin:14px 0 4px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--green);transition:width .3s}
+#msg{min-height:24px;font-weight:600;color:var(--deep)}
+#pal{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
+.sw{width:46px;height:46px;border:3px solid #fff;border-radius:50%;font:700 18px Barlow,Arial,sans-serif;color:#fff;cursor:pointer;box-shadow:0 0 0 2px #ccc;position:relative}
+.sw.l{color:var(--deep)}
+.sw.sel{box-shadow:0 0 0 4px var(--navy)}
+.sw.fin::after{content:"\2713";position:absolute;right:-2px;top:-6px;background:#fff;color:var(--deep);border-radius:50%;width:22px;height:22px;font-size:14px;line-height:22px;box-shadow:0 0 0 1px #ccc}
+button.b{font:600 16px Barlow,Arial,sans-serif;padding:11px 18px;border-radius:24px;border:2px solid var(--green);background:#fff;color:var(--deep);cursor:pointer;margin:4px 4px 4px 0}
+button.p{background:var(--green);color:#fff}
+#done{display:none;background:var(--mint);border-radius:14px;padding:16px;margin-top:14px}
+#done h2{margin:0 0 4px;color:var(--deep)}
+small{color:#555}
+</style>
+</head>
+<body>
+<header>Thrive! <span>November/December 2026</span></header>
+<main>
+<h1>Colour your <em>calm</em></h1>
+<p>Take two minutes for yourself. Pick a colour, tap the matching numbers, and watch a calm green scene come to life. Many people find colouring a gentle way to slow down.</p>
+
+<svg id="scene" viewBox="0 0 400 400" role="group" aria-label="Paint by numbers scene"></svg>
+<div class="bar"><i id="fill"></i></div>
+<div id="msg" aria-live="polite">Pick a colour below, then tap a matching number.</div>
+<div id="pal"></div>
+<button class="b" id="hint">Show me where</button>
+<button class="b" id="reset">Start again</button>
+
+<div id="done">
+  <h2>Beautiful. Take a deep breath.</h2>
+  <p>You've coloured your calm. Save your painting, or send it to us. We'd love to see it.</p>
+  <button class="b p" id="dl">Save my painting</button>
+  <button class="b p" id="mail">Email it to us</button>
+  <button class="b p" id="share" style="display:none">Share</button>
+  <p><small>Emailing is optional. We'll only use your painting if you tell us we can. Not sure what to do next? Take a walk on the grass.</small></p>
+</div>
+</main>
+
+<script>
+// ---- Edit these two lines ----
+const SUBMIT_EMAIL = "marketing@medihelp.co.za";
+const GAME = "colour-your-calm";
+// ------------------------------
+const COL = {1:"#ffffff",2:"#c2f1bb",3:"#87c300",4:"#689157",5:"#00a98e",6:"#17469e",7:"#0F92CF",8:"#FFA300",9:"#F27224",10:"#E64955",11:"#87608c"};
+const DARK = [1,2,3,8];
+// n = colour number, l = label position, f = label size, fixed = already coloured in
+const R = [
+ {n:2,s:'<rect width="400" height="400"/>',l:[200,92]},
+ {n:1,s:'<path d="M40 90Q22 90 24 74Q26 58 46 60Q52 40 76 44Q92 30 108 46Q130 44 132 64Q150 66 148 80Q148 90 134 90Z"/>',l:[86,72]},
+ {n:1,s:'<path d="M215 60Q202 60 204 50Q206 40 220 42Q226 30 242 34Q256 30 262 44Q276 46 274 56Q274 62 264 62Z"/>',l:[240,50],f:12},
+ {n:8,s:'<circle cx="340" cy="70" r="30"/>',l:[340,75]},
+ {n:3,s:'<path d="M0 235Q100 160 200 215T400 195V400H0Z"/>',l:[40,230]},
+ {n:5,s:'<circle cx="255" cy="220" r="18"/>',l:[255,225],f:12},
+ {n:4,s:'<path d="M0 285Q130 215 260 275T400 255V400H0Z"/>',l:[230,295]},
+ {n:5,s:'<path d="M0 345Q200 295 400 335V400H0Z"/>',l:[250,355]},
+ {n:2,s:'<path d="M120 400L185 332L215 334L270 400Z"/>',l:[196,378]},
+ {n:7,s:'<ellipse cx="330" cy="362" rx="50" ry="16"/>',l:[330,367]},
+ {n:11,s:'<rect x="85" y="205" width="22" height="117"/>',l:[96,290]},
+ {n:4,s:'<circle cx="66" cy="188" r="30"/>',l:[52,196]},
+ {n:4,s:'<circle cx="126" cy="188" r="30"/>',l:[140,196]},
+ {n:3,s:'<circle cx="96" cy="160" r="40"/>',l:[96,165]},
+ {n:4,s:'<circle cx="30" cy="322" r="20"/>',l:[30,327]},
+ {n:3,s:'<circle cx="360" cy="312" r="22"/>',l:[360,317]},
+ {n:6,s:'<path d="M150 130Q165 118 182 124Q192 128 198 124Q192 138 176 140Q156 142 150 130Z"/>',l:[172,133],f:12},
+ {n:7,s:'<path d="M168 124Q160 100 142 98Q150 114 156 128Z"/>',l:[155,114],f:10},
+ {n:8,fixed:1,s:'<path d="M198 124L208 126L198 130Z"/>'},
+ {n:9,s:'<path d="M300 148Q272 112 258 130Q252 150 300 152Z"/>',l:[279,141],f:11},
+ {n:9,s:'<path d="M300 148Q328 112 342 130Q348 150 300 152Z"/>',l:[321,141],f:11},
+ {n:10,s:'<path d="M300 152Q268 154 266 172Q274 186 300 160Z"/>',l:[284,165],f:10},
+ {n:10,s:'<path d="M300 152Q332 154 334 172Q326 186 300 160Z"/>',l:[316,165],f:10},
+ {n:11,fixed:1,s:'<ellipse cx="300" cy="150" rx="3.5" ry="14"/>'},
+ {n:10,s:'<circle cx="45" cy="368" r="12"/>',l:[45,372],f:11},
+ {n:9,s:'<circle cx="78" cy="386" r="12"/>',l:[78,390],f:11},
+ {n:11,s:'<circle cx="112" cy="368" r="12"/>',l:[112,372],f:11}
+];
+const painted = R.map(r=>!!r.fixed);
+let sel = 1, started = false;
+const $ = id => document.getElementById(id);
+const scene = $("scene");
+
+function track(name){ try{ if(window.goatcounter && goatcounter.count) goatcounter.count({path:GAME+"/"+name,title:name,event:true}); }catch(e){} }
+
+scene.innerHTML = R.map((r,i)=>`<g class="r${r.fixed?' done':''}"${r.fixed?'':` data-i="${i}" tabindex="0" role="button" aria-label="Area ${i+1}, colour ${r.n}"`}>${r.s}${r.fixed?'':`<text class="num" style="font-size:${r.f||14}px" x="${r.l[0]}" y="${r.l[1]}">${r.n}</text>`}</g>`).join("");
+R.forEach((r,i)=>{ if(r.fixed) scene.children[i].firstElementChild.style.fill = COL[r.n]; });
+$("pal").innerHTML = Object.keys(COL).map(n=>`<button class="sw ${DARK.includes(+n)?'l':''}" data-n="${n}" style="background:${COL[n]}" aria-label="Colour ${n}">${n}</button>`).join("");
+
+function remaining(n){ return R.filter((r,i)=>r.n===n && !painted[i]).length; }
+function refresh(){
+  const total = R.filter(r=>!r.fixed).length, d = painted.filter((p,i)=>p&&!R[i].fixed).length;
+  $("fill").style.width = (d/total*100)+"%";
+  document.querySelectorAll(".sw").forEach(b=>{
+    const n = +b.dataset.n;
+    b.classList.toggle("sel", n===sel);
+    b.classList.toggle("fin", remaining(n)===0);
+  });
+  if(d===total){
+    $("msg").textContent = "All done!";
+    $("done").style.display = "block";
+    track("completed");
+  }
+}
+function setSel(n){ sel = n; refresh(); }
+function paint(i){
+  const g = scene.children[i];
+  if(painted[i]) return;
+  if(R[i].n !== sel){
+    $("msg").textContent = `That one is number ${R[i].n}. Try colour ${R[i].n}.`;
+    return;
+  }
+  painted[i] = true;
+  g.firstElementChild.style.fill = COL[sel];
+  g.classList.add("done");
+  if(!started){ started = true; track("started"); }
+  $("msg").textContent = remaining(sel)===0 ? "Nice. That colour is finished." : "Lovely. Keep going.";
+  if(remaining(sel)===0){
+    const next = Object.keys(COL).map(Number).find(n=>remaining(n)>0);
+    if(next) sel = next;
+  }
+  refresh();
+}
+scene.addEventListener("click",e=>{ const g=e.target.closest(".r"); if(g && g.dataset.i!==undefined) paint(+g.dataset.i); });
+scene.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ const g=e.target.closest(".r"); if(g && g.dataset.i!==undefined){ e.preventDefault(); paint(+g.dataset.i); } } });
+$("pal").addEventListener("click",e=>{ const b=e.target.closest(".sw"); if(b) setSel(+b.dataset.n); });
+$("hint").onclick = ()=>{
+  const gs = [...scene.children].filter((g,i)=>R[i].n===sel && !painted[i]);
+  gs.forEach(g=>{ g.classList.add("hint"); setTimeout(()=>g.classList.remove("hint"),2000); });
+  $("msg").textContent = gs.length ? `Look for the number ${sel}.` : "That colour is finished. Pick another.";
+};
+$("reset").onclick = ()=>{
+  R.forEach((r,i)=>{ painted[i]=!!r.fixed; }); started=false; sel=1;
+  [...scene.children].forEach((g,i)=>{ if(!R[i].fixed){ g.classList.remove("done"); g.firstElementChild.style.fill=""; } });
+  $("done").style.display="none"; $("msg").textContent="Pick a colour below, then tap a matching number.";
+  refresh();
+};
+
+function makePng(){
+  return new Promise(res=>{
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="800" height="800">`+
+      R.map((r,i)=>r.s.replace(/^<(\w+)/,`<$1 fill="${painted[i]?COL[r.n]:"#f6f9f0"}" stroke="#fff" stroke-width="1"`)).join("")+`</svg>`;
+    const img = new Image();
+    img.onload = ()=>{
+      const c = document.createElement("canvas"); c.width=800; c.height=880;
+      const x = c.getContext("2d");
+      x.fillStyle="#fff"; x.fillRect(0,0,800,880);
+      x.drawImage(img,0,0,800,800);
+      x.fillStyle="#87c300"; x.fillRect(0,800,800,80);
+      x.fillStyle="#fff"; x.font="700 30px Barlow, Arial, sans-serif"; x.textBaseline="middle";
+      x.fillText("Colour your calm  |  Thrive! by Medihelp",30,840);
+      c.toBlob(res,"image/png");
+    };
+    img.src = "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg);
+  });
+}
+async function save(){
+  const blob = await makePng();
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "my-colour-your-calm.png";
+  document.body.appendChild(a); a.click(); a.remove();
+  return blob;
+}
+$("dl").onclick = ()=>{ track("downloaded"); save(); };
+$("mail").onclick = async ()=>{
+  track("emailed");
+  await save();
+  const body = "Hi Medihelp team,\n\nHere is my Colour your calm painting (please attach the image that was just saved to your device).\n\nFirst name (optional):\nYou may share my painting: yes / no\n";
+  setTimeout(()=>{ location.href = "mailto:"+SUBMIT_EMAIL+"?subject="+encodeURIComponent("My Colour your calm painting")+"&body="+encodeURIComponent(body); },500);
+};
+try{
+  if(navigator.canShare && navigator.canShare({files:[new File([""],"x.png",{type:"image/png"})]})){
+    $("share").style.display="inline-block";
+    $("share").onclick = async ()=>{ track("shared"); const b=await makePng(); navigator.share({files:[new File([b],"my-colour-your-calm.png",{type:"image/png"})],title:"My Colour your calm painting"}).catch(()=>{}); };
+  }
+}catch(e){}
+refresh();
+</script>
+</body>
+</html>
