@@ -62,14 +62,11 @@ small{color:#555}
   <h2>Beautiful. Take a deep breath.</h2>
   <p>You've coloured your calm.</p>
   <button class="b p" id="dl">Save my painting</button>
-  <button class="b p" id="share" style="display:none">Share</button>
 </div>
 </main>
 
 <script>
-// ---- Edit these two lines ----
 const GAME = "colour-your-calm";
-// ------------------------------
 const COL = {1:"#ffffff",2:"#c2f1bb",3:"#87c300",4:"#689157",5:"#00a98e",6:"#17469e",7:"#0F92CF",8:"#FFA300",9:"#F27224",10:"#E64955",11:"#87608c"};
 const DARK = [1,2,3,8];
 // n = colour number, l = label position, f = label size, fixed = already coloured in
@@ -188,18 +185,6 @@ async function save(){
   return blob;
 }
 $("dl").onclick = ()=>{ track("downloaded"); save(); };
-$("mail").onclick = async ()=>{
-  track("emailed");
-  await save();
-  const body = "Hi Medihelp team,\n\nHere is my Colour your calm painting (please attach the image that was just saved to your device).\n\nFirst name (optional):\nYou may share my painting: yes / no\n";
-  setTimeout(()=>{ location.href = "mailto:"+SUBMIT_EMAIL+"?subject="+encodeURIComponent("My Colour your calm painting")+"&body="+encodeURIComponent(body); },500);
-};
-try{
-  if(navigator.canShare && navigator.canShare({files:[new File([""],"x.png",{type:"image/png"})]})){
-    $("share").style.display="inline-block";
-    $("share").onclick = async ()=>{ track("shared"); const b=await makePng(); navigator.share({files:[new File([b],"my-colour-your-calm.png",{type:"image/png"})],title:"My Colour your calm painting"}).catch(()=>{}); };
-  }
-}catch(e){}
 refresh();
 </script>
 </body>
